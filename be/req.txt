@@ -1,5 +1,7 @@
 fastapi
-uvcorn
+uvicorn
 nba-api
 boto3
 psycopg2-binary
+requests
+numpy<2
