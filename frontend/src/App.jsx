@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Trophy, Activity, Loader2, Sparkles, ChevronRight, ChevronLeft, Calendar } from 'lucide-react';
 import './App.css';
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
 export default function NBAPredictor() {
   const [games, setGames] = useState([]);
