@@ -1,0 +1,5 @@
+fastapi
+uvcorn
+nba-api
+boto3
+psycopg2-binary
