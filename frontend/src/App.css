@@ -1,51 +1,250 @@
-/* ניווט תאריכים */
-.date-navigation {
+/* --- App.css המעודכן --- */
+
+/* 1. איפוס ויישור לרמת האפליקציה כולה (התיקון החשוב) */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #09090b; /* רקע שחור */
+}
+
+/* זה החלק שהיה חסר - מיישר את כל האפליקציה לאמצע */
+#root {
+  width: 100%;
+  min-height: 100vh;
   display: flex;
+  justify-content: center; /* מירכוז אופקי */
+  padding-top: 20px;
+}
+
+/* --- הקונטיינר הראשי --- */
+.app-container {
+  width: 100%;
+  max-width: 850px; /* רוחב נוח לקריאה */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- כותרת --- */
+.main-header {
+  text-align: center;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.main-header h1 {
+  background: linear-gradient(90deg, #a855f7, #ec4899); /* גרדיאנט סגול-ורוד */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+/* --- ניווט תאריכים --- */
+.date-nav-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.date-nav {
+  background-color: #18181b; /* אפור כהה מאוד */
+  padding: 8px 12px;
+  border-radius: 50px;
+  border: 1px solid #27272a;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 25px;
-  border: 1px solid #e2e8f0;
-}
-
-.current-date-display {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #334155;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.calendar-icon {
-  color: #2563eb;
+  gap: 20px;
+  min-width: 350px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .nav-btn {
-  background: #f1f5f9;
+  background-color: #27272a;
   border: none;
+  color: #fff;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #475569;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background-color: #a855f7; /* סגול בהובר */
+  transform: scale(1.1);
+}
+
+/* חידוד האייקונים בתוך הכפתורים */
+.nav-btn svg {
+  stroke-width: 3px; /* עושה את החץ עבה יותר */
+}
+
+.current-date {
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
+/* --- רשימת המשחקים --- */
+.games-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.game-card {
+  background-color: #101012; /* טיפה יותר בהיר מהרקע */
+  border: 1px solid #27272a;
+  border-radius: 16px;
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.game-card:hover {
+  border-color: #52525b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+/* אזור השעה - צד שמאל */
+.game-time {
+  background-color: #a1a1aa;
+  padding: 8px 12px;
+  border-radius: 8px;
+  min-width: 80px;
+  text-align: center;
+  font-family: 'Monaco', monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.time-val {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.time-ampm {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+  font-weight: 600;
+}
+
+/* אזור הקבוצות - אמצע */
+.teams-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 0 20px;
+}
+
+.team-box {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.team-box.home { text-align: right; }
+.team-box.away { text-align: left; }
+
+.team-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vs-badge {
+  color: #52525b;
+  font-size: 0.9rem;
+  font-weight: 900;
+  opacity: 0.6;
+}
+
+/* אזור הכפתור - צד ימין */
+.action-area {
+  width: 140px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.predict-btn {
+  background-color: #27272a;
+  color: #e4e4e7;
+  border: 1px solid #3f3f46;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
   transition: all 0.2s;
 }
 
-.nav-btn:hover:not(:disabled) {
-  background: #e2e8f0;
-  color: #1e293b;
+.predict-btn:hover {
+  background-color: #2e1065; /* סגול כהה */
+  border-color: #a855f7;
+  color: #fff;
 }
 
-.empty-state {
+/* באדג' תוצאה */
+.prediction-badge {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #d8b4fe;
+  padding: 6px 12px;
+  border-radius: 10px;
+  width: 100%;
   text-align: center;
-  padding: 40px;
-  color: #64748b;
-  font-size: 1.1rem;
+}
+
+.pred-winner { display: block; font-weight: 700; font-size: 0.95rem; }
+.pred-conf { font-size: 0.8rem; opacity: 0.8; }
+
+/* התאמה למובייל */
+@media (max-width: 700px) {
+  .game-card {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+  .teams-display { width: 100%; justify-content: space-between; }
+  .team-box.home, .team-box.away { text-align: center; }
+  .action-area { width: 100%; }
 }
