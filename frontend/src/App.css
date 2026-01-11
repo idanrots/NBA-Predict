@@ -1,250 +1,395 @@
-/* --- App.css המעודכן --- */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap');
 
-/* 1. איפוס ויישור לרמת האפליקציה כולה (התיקון החשוב) */
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: dark;
-}
-
-html, body {
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  width: 100%;
-  min-height: 100vh;
-  background-color: #09090b; /* רקע שחור */
 }
 
-/* זה החלק שהיה חסר - מיישר את כל האפליקציה לאמצע */
-#root {
-  width: 100%;
+body {
+  background-color: #020617; /* Deep Slate Blue */
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   display: flex;
-  justify-content: center; /* מירכוז אופקי */
-  padding-top: 20px;
+  justify-content: center;
 }
 
-/* --- הקונטיינר הראשי --- */
+#root { width: 100%; }
+
 .app-container {
   width: 100%;
-  max-width: 850px; /* רוחב נוח לקריאה */
-  padding: 20px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 3rem;
 }
 
-/* --- כותרת --- */
+/* --- HEADER --- */
 .main-header {
-  text-align: center;
-  margin-bottom: 40px;
   width: 100%;
+  padding: 3.5rem 1rem;
+  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.25) 0%, rgba(2, 6, 23, 0) 70%);
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
-.main-header h1 {
-  background: linear-gradient(90deg, #a855f7, #ec4899); /* גרדיאנט סגול-ורוד */
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.icon-wrapper {
+  color: #bfdbfe;
+  filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6));
+  transform: scale(1.1);
+  margin-bottom: 0.5rem;
+}
+
+.neon-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 3rem;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: -1px;
+  text-shadow: 0 0 40px rgba(37, 99, 235, 0.35);
+  letter-spacing: -1.5px;
 }
 
-/* --- ניווט תאריכים --- */
+.subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+/* --- DATE NAV --- */
 .date-nav-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 2.5rem;
 }
 
 .date-nav {
-  background-color: #18181b; /* אפור כהה מאוד */
-  padding: 8px 12px;
-  border-radius: 50px;
-  border: 1px solid #27272a;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  min-width: 350px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  gap: 1.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 0.8rem 1.5rem;
+  border-radius: 99px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .nav-btn {
-  background-color: #27272a;
+  background: transparent;
   border: none;
-  color: #fff;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  color: #94a3b8;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
   transition: all 0.2s ease;
 }
 
 .nav-btn:hover {
-  background-color: #a855f7; /* סגול בהובר */
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
   transform: scale(1.1);
 }
 
-/* חידוד האייקונים בתוך הכפתורים */
-.nav-btn svg {
-  stroke-width: 3px; /* עושה את החץ עבה יותר */
-}
-
 .current-date {
-  color: #e2e8f0;
+  font-size: 1.2rem;
   font-weight: 600;
-  font-size: 1.1rem;
+  color: #e2e8f0;
+  min-width: 180px;
   text-align: center;
-  flex-grow: 1;
 }
 
-/* --- רשימת המשחקים --- */
+/* --- GAMES LIST --- */
 .games-list {
   width: 100%;
+  max-width: 750px;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.2rem;
 }
 
 .game-card {
-  background-color: #101012; /* טיפה יותר בהיר מהרקע */
-  border: 1px solid #27272a;
-  border-radius: 16px;
-  padding: 20px 30px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: transform 0.2s, border-color 0.2s;
+  flex-direction: column;
+  background: #1e293b;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
 }
 
 .game-card:hover {
-  border-color: #52525b;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6);
+  border-color: rgba(59, 130, 246, 0.5);
+  background: #172554;
 }
 
-/* אזור השעה - צד שמאל */
+/* TOP ROW */
+.game-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  width: 100%;
+}
+
 .game-time {
-  background-color: #a1a1aa;
-  padding: 8px 12px;
-  border-radius: 8px;
-  min-width: 80px;
-  text-align: center;
-  font-family: 'Monaco', monospace;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  line-height: 1.2;
+  justify-content: center;
+  min-width: 60px;
+  padding-right: 1.5rem;
+  margin-right: 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.time-val {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: #fff;
-}
+.time-val { font-size: 1.2rem; font-weight: 700; color: white; }
+.time-ampm { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
 
-.time-ampm {
-  font-size: 0.75rem;
-  color: #a1a1aa;
-  font-weight: 600;
-}
-
-/* אזור הקבוצות - אמצע */
 .teams-display {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 30px;
-  padding: 0 20px;
+  gap: 2.5rem;
 }
 
 .team-box {
-  width: 40%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  width: 90px;
 }
 
-.team-box.home { text-align: right; }
-.team-box.away { text-align: left; }
+.team-logo {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
 
 .team-name {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #f4f4f5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .vs-badge {
-  color: #52525b;
-  font-size: 0.9rem;
-  font-weight: 900;
-  opacity: 0.6;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  background: #0f172a;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  letter-spacing: 1px;
 }
 
-/* אזור הכפתור - צד ימין */
+/* SCORE DISPLAY */
+.score-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 0.5rem 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.score-val {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+
+.win-text { color: #fff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
+
+.game-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: 2px;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 .action-area {
-  width: 140px;
+  min-width: 140px;
   display: flex;
   justify-content: flex-end;
+  padding-left: 1rem;
 }
 
 .predict-btn {
-  background-color: #27272a;
-  color: #e4e4e7;
-  border: 1px solid #3f3f46;
-  padding: 10px 16px;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
   transition: all 0.2s;
 }
 
 .predict-btn:hover {
-  background-color: #2e1065; /* סגול כהה */
-  border-color: #a855f7;
-  color: #fff;
+  filter: brightness(1.2);
+  transform: scale(1.02);
 }
 
-/* באדג' תוצאה */
+.predict-btn:disabled { opacity: 0.7; cursor: wait; transform: none; }
+
 .prediction-badge {
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  color: #d8b4fe;
-  padding: 6px 12px;
-  border-radius: 10px;
-  width: 100%;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.pred-winner { display: block; font-weight: 700; font-size: 0.95rem; }
-.pred-conf { font-size: 0.8rem; opacity: 0.8; }
+.pred-winner { color: #60a5fa; font-weight: 700; font-size: 1rem; }
+.pred-conf { font-size: 0.8rem; color: #94a3b8; }
 
-/* התאמה למובייל */
-@media (max-width: 700px) {
-  .game-card {
-    flex-direction: column;
-    gap: 15px;
-    padding: 20px;
-  }
-  .teams-display { width: 100%; justify-content: space-between; }
-  .team-box.home, .team-box.away { text-align: center; }
-  .action-area { width: 100%; }
+/* --- AI EXPLANATION + PREDICTED SCORE SECTION --- */
+.prediction-explanation {
+  background: rgba(15, 23, 42, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem 2rem;
+  animation: slideDown 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem; /* קצת יותר רווח בין האלמנטים */
+}
+
+/* Predicted Score Box */
+.predicted-score-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: rgba(30, 41, 59, 0.5);
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border-left: 3px solid #60a5fa;
+}
+
+.pred-label {
+  font-size: 0.75rem;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+}
+
+.pred-score-vals {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+}
+
+.p-team { color: #94a3b8; font-size: 0.9rem; font-weight: 500; font-family: 'Outfit', sans-serif; }
+.p-score { color: white; font-weight: 800; }
+.p-dash { color: #64748b; }
+
+/* --- עיצוב כותרת ההסבר החדשה והיפה --- */
+.explanation-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  width: fit-content;
+}
+
+.explanation-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  
+  /* גרדיאנט יפה לכותרת */
+  background: linear-gradient(to right, #60a5fa, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.explanation-icon {
+  color: #c084fc; /* צבע האייקון */
+  animation: pulse 2s infinite; /* אנימציה עדינה */
+}
+
+.prediction-explanation p {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); max-height: 0; }
+  to { opacity: 1; transform: translateY(0); max-height: 300px; }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.7; transform: scale(1); }
+}
+
+.loading-state, .empty-state {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #64748b;
+  font-size: 1.2rem;
 }
