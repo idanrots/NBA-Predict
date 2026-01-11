@@ -1,16 +1,34 @@
 import os
 import json
-import random
 import requests
+import google.generativeai as genai
 from datetime import datetime
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+# --- הגדרות ---
+
+# 🛑🛑🛑 שים את המפתח שלך כאן במקום הטקסט למטה 🛑🛑🛑
+# אל תשאיר רווחים, רק את המפתח בתוך הגרשיים
+MY_API_KEY = "AIzaSyA4UjLdXmA-VVF1HQWFbalPdRXbkTFxWY8"
+
+# הגדרת המודל של ג'מיני
+try:
+    if "הדבק_כאן" in MY_API_KEY:
+        print("⚠️ Warning: You didn't paste your API Key in line 14 yet!")
+    
+    genai.configure(api_key=MY_API_KEY)
+    
+    # משתמשים במודל שעבד לך בלוגים מקודם (2.5 flash)
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    print("✅ Gemini AI configured successfully (Model: gemini-2.5-flash)")
+except Exception as e:
+    print(f"❌ Error configuring Gemini: {e}")
+
 app = FastAPI()
 
-# --- הגדרת CORS ---
-# מאפשר לריאקט (localhost:5173) לדבר עם השרת הזה
+# הגדרת CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,70 +36,47 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- מודל הנתונים שמגיע מהריאקט ---
+# --- מודל הנתונים ---
 class PredictionRequest(BaseModel):
     game_id: str
     date: str
     home_team: str
     away_team: str
 
-# --- פונקציית MOCK (מייצרת נתונים באנגלית) ---
-def generate_mock_prediction(home, away, game_id):
-    """מייצרת תחזית דמה באנגלית כדי שהמערכת תעבוד לוקאלית"""
-    print(f"⚠️  Generating MOCK data for {home} vs {away}...")
-    
-    # 1. בחירת מנצח רנדומלי
-    winner = random.choice([home, away])
-    confidence = random.randint(72, 98)
-    
-    # 2. יצירת תוצאה הגיונית
-    score_winner = random.randint(108, 130)
-    score_loser = score_winner - random.randint(2, 12)
-    
-    pred_home = score_winner if winner == home else score_loser
-    pred_away = score_loser if winner == home else score_winner
-
-    # 3. רשימת נימוקים באנגלית (באנגלית, כפי שביקשת)
-    explanations = [
-        f"The model identifies a clear advantage for {winner} in recent home games. The opponent's defensive stats are particularly weak in the fourth quarter.",
-        f"Although {home} is strong, {away} arrives with positive momentum and high 3-point shooting percentages. The model predicts a close game decided in the final minutes.",
-        f"The injury to the opponent's key star gives {winner} a significant advantage in the paint. A fast-paced game with high scoring is expected.",
-        f"Matchup history shows clear superiority for {winner}. Additionally, their defense has been at its peak in the last five games.",
-        f"Advanced metrics suggest {winner} has the edge due to superior rebounding and pace. {home if winner != home else away} has struggled against fast-break teams recently."
-    ]
-
-    return {
-        "game_id": game_id,
-        "predicted_winner": winner,
-        "confidence": confidence,
-        "explanation": random.choice(explanations), # בוחר נימוק רנדומלי מהרשימה
-        "pred_home_score": pred_home,
-        "pred_away_score": pred_away
-    }
+# --- פונקציות עזר ---
+def clean_json_string(text):
+    cleaned = text.strip()
+    if cleaned.startswith("```json"):
+        cleaned = cleaned[7:]
+    if cleaned.startswith("```"):
+        cleaned = cleaned[3:]
+    if cleaned.endswith("```"):
+        cleaned = cleaned[:-3]
+    return cleaned.strip()
 
 # --- Endpoints ---
 
 @app.get("/games")
 def get_games(date: str = Query(None)):
-    """שליפת משחקים מ-ESPN (עובד ללא צורך ב-AWS)"""
+    """שליפת משחקים מ-ESPN"""
     try:
-        # טיפול בתאריך
         if date:
             target_date = date.replace('-', '')
         else:
             target_date = datetime.now().strftime('%Y%m%d')
 
-        print(f"Fetching games for date: {target_date}")
         url = f"http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={target_date}"
-        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
         
+        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+
         if resp.status_code != 200:
             return []
 
         data = resp.json()
+        events = data.get('events', [])
         formatted = []
         
-        for event in data.get('events', []):
+        for event in events:
             competition = event['competitions'][0]
             competitors = competition['competitors']
             status_type = event['status']['type']
@@ -89,7 +84,6 @@ def get_games(date: str = Query(None)):
             home = next((x for x in competitors if x['homeAway'] == 'home'), {})
             away = next((x for x in competitors if x['homeAway'] == 'away'), {})
             
-            # המרת סטטוס משחק
             status_state = status_type.get('state', '')
             my_status = 'Scheduled'
             if status_state == 'post': my_status = 'Final'
@@ -110,22 +104,48 @@ def get_games(date: str = Query(None)):
         return formatted
 
     except Exception as e:
-        print(f"Error fetching games: {e}")
+        print(f"❌ Error in get_games: {e}")
         return []
 
 @app.post("/predict")
 def predict(request: PredictionRequest):
+    """שליחת בקשה ל-Gemini AI"""
+    
+    print(f"🤖 Asking Gemini to predict: {request.home_team} vs {request.away_team}...")
+
+    prompt = f"""
+    You are an expert NBA sports analyst. 
+    Analyze the upcoming game between {request.home_team} (Home) and {request.away_team} (Away) on {request.date}.
+    
+    Consider:
+    1. Team form and recent performance.
+    2. Home court advantage.
+    3. Key player injuries (use your general knowledge).
+    4. Head-to-head match-ups.
+
+    RETURN ONLY A RAW JSON OBJECT (no markdown formatting). 
+    The JSON must match this structure exactly:
+    {{
+        "predicted_winner": "Team Name",
+        "confidence": 85,
+        "explanation": "A professional, sharp analysis reason in English (max 2 sentences).",
+        "pred_home_score": 110,
+        "pred_away_score": 105
+    }}
     """
-    נקודת הקצה לחיזוי.
-    כרגע עוקפת את ה-DB וה-AWS ומחזירה תשובת Mock מיד.
-    """
-    return generate_mock_prediction(
-        request.home_team, 
-        request.away_team, 
-        request.game_id
-    )
+
+    try:
+        response = model.generate_content(prompt)
+        clean_text = clean_json_string(response.text)
+        prediction_data = json.loads(clean_text)
+        prediction_data['game_id'] = request.game_id
+        
+        return prediction_data
+
+    except Exception as e:
+        print(f"❌ Gemini Error: {e}")
+        raise HTTPException(status_code=500, detail=f"AI Prediction failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
-    # הרצת השרת בפורט 8000
     uvicorn.run(app, host="0.0.0.0", port=8000)

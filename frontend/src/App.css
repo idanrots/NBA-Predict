@@ -301,7 +301,7 @@ body {
   animation: slideDown 0.4s ease-out;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem; /* קצת יותר רווח בין האלמנטים */
+  gap: 1.2rem;
 }
 
 /* Predicted Score Box */
@@ -339,7 +339,7 @@ body {
 .p-score { color: white; font-weight: 800; }
 .p-dash { color: #64748b; }
 
-/* --- עיצוב כותרת ההסבר החדשה והיפה --- */
+/* --- עיצוב כותרת ההסבר --- */
 .explanation-header {
   display: flex;
   align-items: center;
@@ -355,16 +355,14 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  
-  /* גרדיאנט יפה לכותרת */
   background: linear-gradient(to right, #60a5fa, #c084fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .explanation-icon {
-  color: #c084fc; /* צבע האייקון */
-  animation: pulse 2s infinite; /* אנימציה עדינה */
+  color: #c084fc;
+  animation: pulse 2s infinite;
 }
 
 .prediction-explanation p {
@@ -392,4 +390,19 @@ body {
   align-items: center;
   color: #64748b;
   font-size: 1.2rem;
+}
+
+/* 🟢🟢🟢 החלק החדש של הסיבוב 🟢🟢🟢 */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+  display: inline-block; /* חובה כדי שיוכל להסתובב */
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// הוספתי את Sparkles לרשימת האייקונים
 import { BrainCircuit, ArrowRight, ArrowLeft, Loader2, Trophy, Target, Sparkles } from 'lucide-react';
 import './App.css';
 
@@ -82,7 +81,6 @@ export default function NBAPredictor() {
 
     } catch (err) {
       console.error("Prediction Error:", err);
-      // הודעת שגיאה מותאמת למצב לוקאלי
       alert("Prediction request failed. Ensure backend is running on port 8000.");
     } finally {
       setPredictingId(null);
