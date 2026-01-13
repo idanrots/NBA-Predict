@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 # 🛑🛑🛑 שים את המפתח שלך כאן במקום הטקסט למטה 🛑🛑🛑
 # אל תשאיר רווחים, רק את המפתח בתוך הגרשיים
-MY_API_KEY = "AIzaSyA4UjLdXmA-VVF1HQWFbalPdRXbkTFxWY8"
+MY_API_KEY = "AIzaSyAIVNyb-h_Hq9p97eM6qgBrBLHCh_pNGEA"
 
 # הגדרת המודל של ג'מיני
 try:

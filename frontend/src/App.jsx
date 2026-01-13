@@ -162,7 +162,10 @@ export default function NBAPredictor() {
                 </div>
 
                 <div className="action-area">
-                  {!predictions[game.gameId] ? (
+                  {/* 🟢 כאן השינוי: אם המשחק נגמר מציגים טקסט, אחרת כפתור */}
+                  {game.status === 'Final' ? (
+                    <span className="game-ended-text">COMPLETED</span>
+                  ) : !predictions[game.gameId] ? (
                     <button 
                       onClick={() => handlePredict(game.gameId, game.homeTeam, game.awayTeam)}
                       disabled={predictingId === game.gameId}
