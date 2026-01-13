@@ -6,20 +6,30 @@ from datetime import datetime
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv  # <--- הוספנו את זה
 
-# --- ייבוא ה-DB Handler (התוספת החשובה!) ---
+# --- ייבוא ה-DB Handler ---
 from db_handler import DBHandler
+
+# --- טעינת משתני הסביבה (טוען את קובץ .env) ---
+load_dotenv()
 
 # --- הגדרות ---
 
-# 🛑🛑🛑 המפתח שלך 🛑🛑🛑
-MY_API_KEY = "AIzaSyBQYu7YOXDfdM9AVrBv8CJXPJqvNG5rbh4"
+# 🛑 שליפת המפתח בצורה מאובטחת מה-env 🛑
+MY_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not MY_API_KEY:
+    print("❌ Error: GEMINI_API_KEY not found in environment variables!")
 
 # הגדרת המודל של ג'מיני
 try:
-    genai.configure(api_key=MY_API_KEY)
-    model = genai.GenerativeModel('gemini-2.5-flash')
-    print("✅ Gemini AI configured successfully")
+    if MY_API_KEY:
+        genai.configure(api_key=MY_API_KEY)
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        print("✅ Gemini AI configured successfully")
+    else:
+        print("⚠️ Gemini AI skipped due to missing API Key")
 except Exception as e:
     print(f"❌ Error configuring Gemini: {e}")
 
@@ -70,6 +80,7 @@ def get_games(date: str = Query(None)):
         else:
             target_date = datetime.now().strftime('%Y%m%d')
 
+        # הוספתי כאן את התיקון ל-URL שעשינו קודם
         url = f"http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={target_date}"
         
         resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
@@ -116,14 +127,14 @@ def get_games(date: str = Query(None)):
 def predict(request: PredictionRequest):
     """שליחת בקשה ל-Gemini AI עם שמירה ב-DB"""
     
-    # 1. בדיקה האם כבר קיים חיזוי ב-DB (חוסך זמן וכסף)
+    # 1. בדיקה האם כבר קיים חיזוי ב-DB
     if db:
         print(f"🔍 Checking DB for game: {request.game_id}...")
         cached_prediction = db.get_prediction(request.game_id)
         if cached_prediction:
             print("✅ Found prediction in DB! Returning cached result.")
             cached_prediction['game_id'] = request.game_id
-            cached_prediction['source'] = 'database' # סימון שהגיע מהדאטה בייס
+            cached_prediction['source'] = 'database'
             return cached_prediction
 
     print(f"🤖 Asking Gemini to predict: {request.home_team} vs {request.away_team}...")
@@ -154,7 +165,7 @@ def predict(request: PredictionRequest):
         clean_text = clean_json_string(response.text)
         prediction_data = json.loads(clean_text)
         prediction_data['game_id'] = request.game_id
-        prediction_data['source'] = 'ai' # סימון שהגיע מה-AI
+        prediction_data['source'] = 'ai'
         
         # 2. שמירת התוצאה ב-DB
         if db:

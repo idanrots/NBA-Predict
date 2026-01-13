@@ -7,10 +7,53 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node.js (Frontend)
 node_modules
 dist
 dist-ssr
 *.local
+
+# Python (Backend)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+.installed.cfg
+*.egg
+*.egg-info/
+
+# Virtual Environments (כולל השם הספציפי שלך)
+.venv
+venv/
+ENV/
+env/
+be/venv/
+be/.venv/
+nba-predict/
+be/nba-predict/
+
+# Environment Variables & Secrets (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+be/.env
+**/.env
 
 # Editor directories and files
 .vscode/*
