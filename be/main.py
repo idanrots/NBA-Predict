@@ -7,24 +7,29 @@ from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+# --- ייבוא ה-DB Handler (התוספת החשובה!) ---
+from db_handler import DBHandler
+
 # --- הגדרות ---
 
-# 🛑🛑🛑 שים את המפתח שלך כאן במקום הטקסט למטה 🛑🛑🛑
-# אל תשאיר רווחים, רק את המפתח בתוך הגרשיים
-MY_API_KEY = "AIzaSyAIVNyb-h_Hq9p97eM6qgBrBLHCh_pNGEA"
+# 🛑🛑🛑 המפתח שלך 🛑🛑🛑
+MY_API_KEY = "AIzaSyBQYu7YOXDfdM9AVrBv8CJXPJqvNG5rbh4"
 
 # הגדרת המודל של ג'מיני
 try:
-    if "הדבק_כאן" in MY_API_KEY:
-        print("⚠️ Warning: You didn't paste your API Key in line 14 yet!")
-    
     genai.configure(api_key=MY_API_KEY)
-    
-    # משתמשים במודל שעבד לך בלוגים מקודם (2.5 flash)
     model = genai.GenerativeModel('gemini-2.5-flash')
-    print("✅ Gemini AI configured successfully (Model: gemini-2.5-flash)")
+    print("✅ Gemini AI configured successfully")
 except Exception as e:
     print(f"❌ Error configuring Gemini: {e}")
+
+# --- אתחול החיבור ל-DB ---
+try:
+    db = DBHandler()
+    print("✅ Database Handler Initialized")
+except Exception as e:
+    print(f"⚠️ Warning: DB Handler failed to init: {e}")
+    db = None
 
 app = FastAPI()
 
@@ -109,8 +114,18 @@ def get_games(date: str = Query(None)):
 
 @app.post("/predict")
 def predict(request: PredictionRequest):
-    """שליחת בקשה ל-Gemini AI"""
+    """שליחת בקשה ל-Gemini AI עם שמירה ב-DB"""
     
+    # 1. בדיקה האם כבר קיים חיזוי ב-DB (חוסך זמן וכסף)
+    if db:
+        print(f"🔍 Checking DB for game: {request.game_id}...")
+        cached_prediction = db.get_prediction(request.game_id)
+        if cached_prediction:
+            print("✅ Found prediction in DB! Returning cached result.")
+            cached_prediction['game_id'] = request.game_id
+            cached_prediction['source'] = 'database' # סימון שהגיע מהדאטה בייס
+            return cached_prediction
+
     print(f"🤖 Asking Gemini to predict: {request.home_team} vs {request.away_team}...")
 
     prompt = f"""
@@ -139,12 +154,24 @@ def predict(request: PredictionRequest):
         clean_text = clean_json_string(response.text)
         prediction_data = json.loads(clean_text)
         prediction_data['game_id'] = request.game_id
+        prediction_data['source'] = 'ai' # סימון שהגיע מה-AI
         
+        # 2. שמירת התוצאה ב-DB
+        if db:
+            print(f"💾 Saving prediction to DB for game: {request.game_id}...")
+            db.save_prediction(
+                game_id=request.game_id,
+                home=request.home_team,
+                away=request.away_team,
+                prediction_json=prediction_data
+            )
+            print("✅ Saved successfully.")
+
         return prediction_data
 
     except Exception as e:
-        print(f"❌ Gemini Error: {e}")
-        raise HTTPException(status_code=500, detail=f"AI Prediction failed: {str(e)}")
+        print(f"❌ Gemini/DB Error: {e}")
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
