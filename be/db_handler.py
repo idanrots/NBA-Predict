@@ -78,3 +78,31 @@ class DBHandler:
             print(f"Error saving prediction: {e}")
         finally:
             conn.close()
+
+    def fetch_all_predictions(self):
+        """מחזיר את כל התחזיות השמורות כרשימה של מילונים"""
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cur:
+                # שימוש בשם הטבלה הנכון: game_predictions
+                cur.execute("SELECT prediction_json FROM game_predictions")
+                rows = cur.fetchall()
+                
+                results = []
+                for row in rows:
+                    if row and row[0]:
+                        # במקרה של Postgres הנתונים חוזרים לפעמים כבר כ-dict או כמחרוזת
+                        # תלוי בדרייבר, כאן נניח שזה טקסט (בגלל הגדרת העמודה כ-TEXT)
+                        try:
+                            data = json.loads(row[0])
+                            results.append(data)
+                        except TypeError:
+                            # אם הדרייבר כבר המיר ל-dict באופן אוטומטי
+                            results.append(row[0])
+                            
+                return results
+        except Exception as e:
+            print(f"Error fetching all predictions: {e}")
+            return []
+        finally:
+            conn.close()

@@ -6,20 +6,23 @@ from datetime import datetime
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from dotenv import load_dotenv  # <--- הוספנו את זה
+from dotenv import load_dotenv
 
 # --- ייבוא ה-DB Handler ---
+# וודא שהקובץ db_handler.py נמצא באותה תיקייה
 from db_handler import DBHandler
 
-# --- טעינת משתני הסביבה (טוען את קובץ .env) ---
+# --- טעינת משתני הסביבה ---
 load_dotenv()
 
 # --- הגדרות ---
 
-# 🛑 שליפת המפתח בצורה מאובטחת מה-env 🛑
 MY_API_KEY = os.getenv("GEMINI_API_KEY")
 
+# אם לא מצא ב-.env, נסה לבדוק אם המשתמש רוצה להכניס ידנית (לא מומלץ לפרודקשן)
 if not MY_API_KEY:
+    # אופציה: אם אתה עובד ללא .env כרגע, אתה יכול להכניס את המפתח כאן זמנית
+    # MY_API_KEY = "YOUR_KEY_HERE"
     print("❌ Error: GEMINI_API_KEY not found in environment variables!")
 
 # הגדרת המודל של ג'מיני
@@ -36,7 +39,7 @@ except Exception as e:
 # --- אתחול החיבור ל-DB ---
 try:
     db = DBHandler()
-    print("✅ Database Handler Initialized")
+    print("✅ Database Handler Initialized & Connected to AWS RDS")
 except Exception as e:
     print(f"⚠️ Warning: DB Handler failed to init: {e}")
     db = None
@@ -80,10 +83,11 @@ def get_games(date: str = Query(None)):
         else:
             target_date = datetime.now().strftime('%Y%m%d')
 
-        # הוספתי כאן את התיקון ל-URL שעשינו קודם
-        url = f"http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={target_date}"
+        # שימוש ב-HTTPS למניעת חסימות
+        url = f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={target_date}"
         
-        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+        # Timeout קצת יותר ארוך למקרה של איטיות רשת
+        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
 
         if resp.status_code != 200:
             return []
@@ -123,18 +127,58 @@ def get_games(date: str = Query(None)):
         print(f"❌ Error in get_games: {e}")
         return []
 
+# --- 🆕 Endpoint לטבלה החמודה ---
+@app.get("/predictions/upcoming")
+def get_upcoming_predictions():
+    """מחזיר את 5 התחזיות הקרובות ביותר שקיימות ב-DB"""
+    if not db:
+        print("⚠️ DB is not connected, returning empty list")
+        return []
+    
+    try:
+        # 1. שליפת כל הנתונים מה-DB באמצעות הפונקציה החדשה שיצרנו
+        all_predictions = db.fetch_all_predictions() 
+
+        # 2. סינון ומיון בפייתון
+        future_games = future_games[:7]
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        
+        for pred in all_predictions:
+            # אנחנו צריכים לוודא שה-JSON מכיל תאריך
+            # אם שמרת תחזיות ישנות בלי תאריך, נדלג עליהן או ניתן להן תאריך ברירת מחדל
+            game_date = pred.get('game_date') 
+            
+            # אם התאריך קיים והוא היום או בעתיד - נשמור אותו
+            if game_date and game_date >= today_str:
+                future_games.append(pred)
+
+        # 3. מיון לפי תאריך (מהקרוב לרחוק)
+        # שימוש ב-get למקרה חירום שאין תאריך, שם אותו בסוף הרשימה
+        future_games.sort(key=lambda x: x.get('game_date', '9999-12-31'))
+
+        # 4. החזרת ה-5 הראשונים בלבד
+        return future_games[:5]
+
+    except Exception as e:
+        print(f"❌ Error getting upcoming predictions: {e}")
+        return []
+
 @app.post("/predict")
 def predict(request: PredictionRequest):
     """שליחת בקשה ל-Gemini AI עם שמירה ב-DB"""
     
-    # 1. בדיקה האם כבר קיים חיזוי ב-DB
+    # 1. בדיקה האם כבר קיים חיזוי ב-DB (Cache)
     if db:
         print(f"🔍 Checking DB for game: {request.game_id}...")
         cached_prediction = db.get_prediction(request.game_id)
         if cached_prediction:
             print("✅ Found prediction in DB! Returning cached result.")
+            # מעדכנים שדות תצוגה למקרה שהם חסרים בגרסה הישנה
             cached_prediction['game_id'] = request.game_id
             cached_prediction['source'] = 'database'
+            cached_prediction['game_date'] = request.date
+            cached_prediction['home_team'] = request.home_team
+            cached_prediction['away_team'] = request.away_team
             return cached_prediction
 
     print(f"🤖 Asking Gemini to predict: {request.home_team} vs {request.away_team}...")
@@ -164,8 +208,14 @@ def predict(request: PredictionRequest):
         response = model.generate_content(prompt)
         clean_text = clean_json_string(response.text)
         prediction_data = json.loads(clean_text)
+        
+        # 🟢 הוספת נתונים קריטיים ל-JSON לפני השמירה ב-DB 🟢
+        # זה התיקון שגורם לטבלה לעבוד!
         prediction_data['game_id'] = request.game_id
         prediction_data['source'] = 'ai'
+        prediction_data['game_date'] = request.date      # <--- קריטי לסינון
+        prediction_data['home_team'] = request.home_team # <--- קריטי לתצוגה
+        prediction_data['away_team'] = request.away_team # <--- קריטי לתצוגה
         
         # 2. שמירת התוצאה ב-DB
         if db:
@@ -186,4 +236,5 @@ def predict(request: PredictionRequest):
 
 if __name__ == "__main__":
     import uvicorn
+    # הרצת השרת
     uvicorn.run(app, host="0.0.0.0", port=8000)

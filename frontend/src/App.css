@@ -8,7 +8,7 @@
 }
 
 body {
-  background-color: #020617; /* Deep Slate Blue */
+  background-color: #020617;
   color: white;
   font-family: 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -31,11 +31,11 @@ body {
 /* --- HEADER --- */
 .main-header {
   width: 100%;
-  padding: 3.5rem 1rem;
+  padding: 2.5rem 1rem;
   background: radial-gradient(circle at top, rgba(37, 99, 235, 0.25) 0%, rgba(2, 6, 23, 0) 70%);
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .header-content {
@@ -43,21 +43,20 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .icon-wrapper {
   color: #bfdbfe;
   filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6));
   transform: scale(1.1);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 
 .neon-title {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 800;
   line-height: 1;
-  margin: 0;
   text-transform: uppercase;
   background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
   -webkit-background-clip: text;
@@ -67,13 +66,166 @@ body {
 }
 
 .subtitle {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #94a3b8;
   font-weight: 500;
   letter-spacing: 4px;
   text-transform: uppercase;
-  margin-top: 0.5rem;
   opacity: 0.8;
+}
+
+/* --- 🆕 COMPACT INFINITE SCROLL SECTION --- */
+.upcoming-section {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 2rem;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  padding: 0 1rem;
+  font-size: 0.9rem; /* הקטנתי את כותרת הסקשן */
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 2px;
+}
+
+.scroll-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.scroll-track {
+  display: flex;
+  gap: 1rem; /* רווח קטן יותר בין הכרטיסים */
+  width: max-content;
+  animation: scroll 30s linear infinite;
+  padding: 0.5rem 0; /* קצת מקום לצלליות */
+}
+
+.scroll-track:hover {
+  animation-play-state: paused;
+}
+
+/* --- הכרטיס המוקטן --- */
+.upcoming-card.horizontal-card {
+  flex: 0 0 auto; 
+  width: 210px; /* רוחב מוקטן משמעותית */
+  
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.8rem; /* פחות ריפוד פנימי */
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: transform 0.3s ease;
+}
+
+.upcoming-card.horizontal-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.uc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.uc-date {
+  font-size: 0.65rem; /* פונט קטן */
+  color: #94a3b8;
+  background: rgba(255,255,255,0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: flex; 
+  align-items: center; 
+  gap: 4px;
+}
+
+.uc-teams {
+  font-size: 0.75rem; /* שם הקבוצות קטן יותר */
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #e2e8f0;
+}
+
+.uc-teams .vs { font-size: 0.65rem; color: #64748b; margin: 0 4px; font-weight: 400;}
+
+.uc-body { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.uc-info-row {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+}
+
+.label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; }
+
+.winner-val { 
+  font-size: 0.8rem; 
+  font-weight: 700; 
+  color: #60a5fa; 
+}
+
+.score-box { 
+  font-size: 0.75rem; 
+  padding: 2px 6px; 
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.05);
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+}
+
+.score-box .s-accent { color: #fff; }
+
+.uc-confidence {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.progress-bg {
+  width: 100%;
+  height: 4px; /* בר דק יותר */
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1s ease;
+}
+
+.mini-conf-text {
+  font-size: 0.6rem;
+  color: #64748b;
+  align-self: flex-end;
 }
 
 /* --- DATE NAV --- */
@@ -81,7 +233,7 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .date-nav {
@@ -91,7 +243,7 @@ body {
   gap: 1.5rem;
   background: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(10px);
-  padding: 0.8rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 99px;
   border: 1px solid rgba(59, 130, 246, 0.2);
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -105,7 +257,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 6px;
   border-radius: 50%;
   transition: all 0.2s ease;
 }
@@ -117,10 +269,10 @@ body {
 }
 
 .current-date {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #e2e8f0;
-  min-width: 180px;
+  min-width: 160px;
   text-align: center;
 }
 
@@ -131,14 +283,14 @@ body {
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .game-card {
   display: flex;
   flex-direction: column;
   background: #1e293b;
-  border-radius: 20px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -146,8 +298,8 @@ body {
 }
 
 .game-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5);
   border-color: rgba(59, 130, 246, 0.5);
   background: #172554;
 }
@@ -157,7 +309,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 1.5rem;
   width: 100%;
 }
 
@@ -166,52 +318,52 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 60px;
-  padding-right: 1.5rem;
-  margin-right: 1rem;
+  min-width: 50px;
+  padding-right: 1.2rem;
+  margin-right: 0.8rem;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.time-val { font-size: 1.2rem; font-weight: 700; color: white; }
-.time-ampm { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+.time-val { font-size: 1.1rem; font-weight: 700; color: white; }
+.time-ampm { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
 
 .teams-display {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .team-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  width: 90px;
+  gap: 0.6rem;
+  width: 80px;
 }
 
 .team-logo {
-  width: 55px;
-  height: 55px;
+  width: 45px;
+  height: 45px;
   object-fit: contain;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
 }
 
 .team-name {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-align: center;
   line-height: 1.2;
 }
 
 .vs-badge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 800;
   color: #64748b;
   background: #0f172a;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
   letter-spacing: 1px;
 }
 
@@ -220,15 +372,15 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.6rem;
   background: rgba(15, 23, 42, 0.4);
-  padding: 0.5rem 1.5rem;
-  border-radius: 16px;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .score-val {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #94a3b8;
   font-family: 'JetBrains Mono', monospace;
@@ -241,33 +393,33 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 800;
   color: #ef4444;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   background: rgba(239, 68, 68, 0.1);
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
 }
 
 .action-area {
-  min-width: 140px;
+  min-width: 120px;
   display: flex;
   justify-content: flex-end;
-  padding-left: 1rem;
+  padding-left: 0.8rem;
 }
 
 .predict-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
   transition: all 0.2s;
@@ -285,42 +437,41 @@ body {
   flex-direction: column;
   align-items: flex-end;
   background: rgba(15, 23, 42, 0.5);
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.pred-winner { color: #60a5fa; font-weight: 700; font-size: 1rem; }
-.pred-conf { font-size: 0.8rem; color: #94a3b8; }
+.pred-winner { color: #60a5fa; font-weight: 700; font-size: 0.9rem; }
+.pred-conf { font-size: 0.75rem; color: #94a3b8; }
 
 /* --- AI EXPLANATION + PREDICTED SCORE SECTION --- */
 .prediction-explanation {
   background: rgba(15, 23, 42, 0.6);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 1.5rem;
   animation: slideDown 0.4s ease-out;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
-/* Predicted Score Box */
 .predicted-score-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   background: rgba(30, 41, 59, 0.5);
-  padding: 0.8rem 1rem;
-  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
   border-left: 3px solid #60a5fa;
 }
 
 .pred-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #60a5fa;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -330,28 +481,27 @@ body {
 .pred-score-vals {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.6rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
-.p-team { color: #94a3b8; font-size: 0.9rem; font-weight: 500; font-family: 'Outfit', sans-serif; }
+.p-team { color: #94a3b8; font-size: 0.85rem; font-weight: 500; font-family: 'Outfit', sans-serif; }
 .p-score { color: white; font-weight: 800; }
 .p-dash { color: #64748b; }
 
-/* --- עיצוב כותרת ההסבר --- */
 .explanation-header {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   width: fit-content;
 }
 
 .explanation-title {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -366,9 +516,9 @@ body {
 }
 
 .prediction-explanation p {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #cbd5e1;
-  line-height: 1.6;
+  line-height: 1.5;
   font-weight: 300;
 }
 
@@ -383,37 +533,32 @@ body {
   100% { opacity: 0.7; transform: scale(1); }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
 .loading-state, .empty-state {
   margin-top: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #64748b;
-  font-size: 1.2rem;
-}
-
-/* 🟢🟢🟢 החלק החדש של הסיבוב 🟢🟢🟢 */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-  display: inline-block; /* חובה כדי שיוכל להסתובב */
+  font-size: 1.1rem;
 }
 
 .game-ended-text {
   color: #64748b;
   font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
   background: rgba(15, 23, 42, 0.5);
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
