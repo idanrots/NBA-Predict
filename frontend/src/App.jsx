@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import './App.css';
 
-const API_URL = "http://127.0.0.1:8000";
+// 🟢 השינוי: תמיכה במשתני סביבה של AWS Amplify 🟢
+const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
 export default function NBAPredictor() {
   const [games, setGames] = useState([]);
@@ -118,7 +119,7 @@ export default function NBAPredictor() {
 
     } catch (err) {
       console.error("Prediction Error:", err);
-      alert("Prediction request failed. Ensure backend is running on port 8000.");
+      alert("Prediction request failed. Please check your connection.");
     } finally {
       setPredictingId(null);
     }
