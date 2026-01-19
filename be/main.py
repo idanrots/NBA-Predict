@@ -214,13 +214,9 @@ def predict(request: PredictionRequest):
 
 # --- הגדרת Handler עבור AWS Lambda ---
 # אנו עוטפים את זה ב-try/except כדי שלא יקרוס לוקאלית אם mangum חסר
-handler = None
-try:
-    from mangum import Mangum
-    handler = Mangum(app)
-except ImportError:
-    print("⚠️ Mangum not found - skipping Lambda handler creation (OK for local dev)")
-
+# --- AWS Lambda Handler ---
+from mangum import Mangum
+handler = Mangum(app)
 # --- הרצה לוקאלית ---
 if __name__ == "__main__":
     import uvicorn

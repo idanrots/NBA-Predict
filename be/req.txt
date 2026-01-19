@@ -6,3 +6,4 @@ psycopg2-binary
 requests
 numpy<2
 mangum
+google-generativeai
