@@ -13,8 +13,9 @@ import {
 } from 'lucide-react';
 import './App.css';
 
-// 🟢 השינוי: תמיכה במשתני סביבה של AWS Amplify 🟢
-const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+// 🔴 שים לב: אנחנו שמים את הכתובת קבוע כרגע כדי לוודא שזה עובד 🔴
+const API_URL = "https://pw54lblmaomffxtwzzgu2tesxu0ywybh.lambda-url.us-east-1.on.aws";
+// const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
 export default function NBAPredictor() {
   const [games, setGames] = useState([]);
