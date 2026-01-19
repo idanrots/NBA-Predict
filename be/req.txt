@@ -7,3 +7,5 @@ requests
 numpy<2
 mangum
 google-generativeai
+python-dotenv
+pandas
